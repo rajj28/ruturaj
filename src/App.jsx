@@ -866,7 +866,7 @@ function CaseStudy({ index, onClose, onStep }) {
           <div>
             <p className="cs__kicker">No. {p.n} &middot; {p.year}</p>
             <h3 className="cs__title" id="cs-title">{p.name}</h3>
-            <p className="cs__tagline">{p.tagline}</p>
+            <p className="cs__tagline">{p.tagline || p.note}</p>
           </div>
           <div className="cs__links">
             {p.live && (
@@ -891,45 +891,65 @@ function CaseStudy({ index, onClose, onStep }) {
           </div>
         </header>
 
-        <section className="cs__how" aria-label="How it works">
-          <p className="cs__label">How it works</p>
-          <Diagram spec={p.diagram} />
-          <ol className="cs__steps">
-            {p.how.map((s) => <li key={s}>{s}</li>)}
-          </ol>
-        </section>
+        {/* Every section below is optional. A project only needs n, name,
+            year, role, note and url to open — a row appended by a content
+            tool (Provenance, say) has just those, and the window shows what
+            it has rather than crashing on what it lacks. */}
+        {(p.diagram || p.how?.length > 0) && (
+          <section className="cs__how" aria-label="How it works">
+            <p className="cs__label">How it works</p>
+            {p.diagram && <Diagram spec={p.diagram} />}
+            {p.how?.length > 0 && (
+              <ol className="cs__steps">
+                {p.how.map((s) => <li key={s}>{s}</li>)}
+              </ol>
+            )}
+          </section>
+        )}
 
-        <div className="cs__grid">
-          <section>
-            <p className="cs__label">What it is</p>
-            <p>{p.summary}</p>
-          </section>
-          <section>
-            <p className="cs__label">Why it exists</p>
-            <p>{p.why}</p>
-          </section>
-          <section>
-            <p className="cs__label">Where it&rsquo;s used</p>
-            <ul>{p.where.map((w) => <li key={w}>{w}</li>)}</ul>
-          </section>
-        </div>
+        {(p.summary || p.why || p.where?.length > 0) && (
+          <div className="cs__grid">
+            {p.summary && (
+              <section>
+                <p className="cs__label">What it is</p>
+                <p>{p.summary}</p>
+              </section>
+            )}
+            {p.why && (
+              <section>
+                <p className="cs__label">Why it exists</p>
+                <p>{p.why}</p>
+              </section>
+            )}
+            {p.where?.length > 0 && (
+              <section>
+                <p className="cs__label">Where it&rsquo;s used</p>
+                <ul>{p.where.map((w) => <li key={w}>{w}</li>)}</ul>
+              </section>
+            )}
+          </div>
+        )}
 
-        <div className={'cs__foot' + (p.results.length ? '' : ' cs__foot--solo')}>
-          {p.results.length > 0 && (
-            <section className="cs__proof">
-              <p className="cs__label">Proof</p>
-              <ul>
-                {p.results.map((r) => (
-                  <li key={r.l}><strong>{r.v}</strong><span>{r.l}</span></li>
-                ))}
-              </ul>
-            </section>
-          )}
-          <section className="cs__stack">
-            <p className="cs__label">Stack</p>
-            <ul>{p.stack.map((s) => <li key={s}>{s}</li>)}</ul>
-          </section>
-        </div>
+        {(p.results?.length > 0 || p.stack?.length > 0) && (
+          <div className={'cs__foot' + (p.results?.length > 0 && p.stack?.length > 0 ? '' : ' cs__foot--solo')}>
+            {p.results?.length > 0 && (
+              <section className="cs__proof">
+                <p className="cs__label">Proof</p>
+                <ul>
+                  {p.results.map((r) => (
+                    <li key={r.l}><strong>{r.v}</strong><span>{r.l}</span></li>
+                  ))}
+                </ul>
+              </section>
+            )}
+            {p.stack?.length > 0 && (
+              <section className="cs__stack">
+                <p className="cs__label">Stack</p>
+                <ul>{p.stack.map((s) => <li key={s}>{s}</li>)}</ul>
+              </section>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
