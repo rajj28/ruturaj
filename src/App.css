@@ -343,6 +343,72 @@
 .chrome--light .rail a::after { color: var(--bone-soft); }
 
 
+/* ---------- the scrollbar ----------
+   A hairline track down the right edge with a thin ink thumb — the same
+   tone family as the rules and the gutter spine. It shows while the page
+   moves (`is-live`, set by the driver) and fades once it has been still,
+   swells a little under the pointer and while being dragged, and follows
+   the chrome's light/dark switch. Touch devices keep no scrollbar, as they
+   normally would. */
+.sb {
+  position: fixed;
+  top: calc(var(--gutter) + 12px);
+  right: 6px;
+  bottom: 12px;
+  width: 14px;
+  z-index: 6;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.2s;
+  cursor: pointer;
+}
+
+.sb::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  margin-left: -0.5px;
+  background: rgba(255, 255, 255, 0.16);
+  transition: background 0.8s ease;
+}
+
+.sb__thumb {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 3px;
+  height: 28px;
+  margin-left: -1.5px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.72);
+  will-change: transform;
+  cursor: grab;
+  transition: width 0.25s ease, margin-left 0.25s ease, background 0.8s ease;
+}
+
+.sb.is-live,
+.sb:hover { opacity: 1; transition-delay: 0s; }
+
+.sb:hover .sb__thumb,
+.sb.is-drag .sb__thumb { width: 5px; margin-left: -2.5px; background: #fff; }
+.sb.is-drag .sb__thumb { cursor: grabbing; }
+
+/* on a light section, ink instead of white */
+.chrome--light ~ .sb::before { background: rgba(27, 29, 24, 0.16); }
+.chrome--light ~ .sb .sb__thumb { background: rgba(27, 29, 24, 0.62); }
+.chrome--light ~ .sb:hover .sb__thumb,
+.chrome--light ~ .sb.is-drag .sb__thumb { background: var(--bone-ink); }
+
+@media (hover: none) and (pointer: coarse) {
+  .sb { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb { transition: none; }
+}
+
 /* ---------- reading progress ----------
    The gutter rule, drawn over again in full ink as you read, with the
    percentage counted at its foot in the gutter column. */

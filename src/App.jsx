@@ -1558,9 +1558,11 @@ export default function App() {
     let cur = window.scrollY
 
     let pageMax = 1
+    let sbSized = 0   // the scrollbar track height the thumb was last sized for
     const syncHeight = () => {
       document.body.style.height = el.scrollHeight + 'px'
       pageMax = Math.max(el.scrollHeight - window.innerHeight, 1)
+      sbSized = 0   // the thumb's share of the track changes with the page
     }
 
     const apply = (y) => {
@@ -2506,6 +2508,74 @@ const SPARK_PATH = new Path2D(
     const progLine = document.querySelector('.progress__line')
     const progNum = document.querySelector('.progress__num')
     let progShown = -1
+
+    /* The scrollbar. The native one is hidden (index.css) and this thin one
+       stands in at the right edge: its thumb is sized to the viewport's share
+       of the page and rides the SAME eased position everything else draws
+       from, so it never disagrees with the picture. It shows while the page
+       moves and fades once it has been still for a moment. Dragging the
+       thumb scrolls, so nothing is lost to anyone who scrolls by grabbing it. */
+    const sb = document.querySelector('.sb')
+    const sbThumb = document.querySelector('.sb__thumb')
+    let sbLast = -1
+    let sbHide = 0
+    const scrollbar = () => {
+      if (!sb || !sbThumb) return
+      const vh = window.innerHeight
+      const track = sb.offsetHeight
+      if (track !== sbSized) {
+        sbSized = track
+        const span = Math.max(vh / (pageMax + vh), 0)
+        sbThumb.style.height = Math.max(Math.round(track * span), 28) + 'px'
+      }
+      const p = clamp01(cur / pageMax)
+      if (p !== sbLast) {
+        sbLast = p
+        const room = track - sbThumb.offsetHeight
+        sbThumb.style.transform = 'translate3d(0,' + (room * p).toFixed(1) + 'px,0)'
+        sb.classList.add('is-live')
+        clearTimeout(sbHide)
+        sbHide = window.setTimeout(() => sb.classList.remove('is-live'), 900)
+      }
+    }
+
+    /* Grab the thumb and drag: the page follows the pointer, immediately —
+       an eased chase would lag the hand holding it. */
+    let sbDrag = null
+    const sbDown = (e) => {
+      if (!sbThumb || !sb) return
+      e.preventDefault()
+      sbDrag = { y: e.clientY, at: cur }
+      sb.classList.add('is-drag', 'is-live')
+      sbThumb.setPointerCapture(e.pointerId)
+    }
+    const sbMove = (e) => {
+      if (!sbDrag) return
+      const room = sb.offsetHeight - sbThumb.offsetHeight
+      const y = sbDrag.at + ((e.clientY - sbDrag.y) / Math.max(room, 1)) * pageMax
+      lenis.scrollTo(Math.max(0, Math.min(y, pageMax)), { immediate: true, force: true })
+    }
+    const sbUp = () => {
+      if (!sbDrag) return
+      sbDrag = null
+      sb.classList.remove('is-drag')
+    }
+    /* clicking the track jumps there */
+    const sbTrack = (e) => {
+      if (!sb || !sbThumb || e.target === sbThumb) return
+      const r = sb.getBoundingClientRect()
+      const room = r.height - sbThumb.offsetHeight
+      const p = clamp01((e.clientY - r.top - sbThumb.offsetHeight / 2) / Math.max(room, 1))
+      lenis.scrollTo(p * pageMax, { duration: 0.8, force: true })
+    }
+    if (sbThumb) {
+      sbThumb.addEventListener('pointerdown', sbDown)
+      sbThumb.addEventListener('pointermove', sbMove)
+      sbThumb.addEventListener('pointerup', sbUp)
+      sbThumb.addEventListener('pointercancel', sbUp)
+    }
+    if (sb) sb.addEventListener('pointerdown', sbTrack)
+
     const progress = () => {
       const p = clamp01(cur / pageMax)
       if (progLine) progLine.style.transform = 'scaleY(' + p.toFixed(4) + ')'
@@ -2514,6 +2584,7 @@ const SPARK_PATH = new Path2D(
         progShown = pct
         progNum.textContent = String(pct).padStart(3, '0')
       }
+      scrollbar()
     }
 
     /* Everything the frame needs, in the order it needs it. Called from
@@ -2646,6 +2717,14 @@ const SPARK_PATH = new Path2D(
       capRO.disconnect()
       nav.current = null
       clearTimeout(curtainT)
+      clearTimeout(sbHide)
+      if (sbThumb) {
+        sbThumb.removeEventListener('pointerdown', sbDown)
+        sbThumb.removeEventListener('pointermove', sbMove)
+        sbThumb.removeEventListener('pointerup', sbUp)
+        sbThumb.removeEventListener('pointercancel', sbUp)
+      }
+      if (sb) sb.removeEventListener('pointerdown', sbTrack)
       window.removeEventListener('resize', syncHeight)
       document.body.style.height = ''
     }
@@ -2736,6 +2815,10 @@ const SPARK_PATH = new Path2D(
           onGo={(i) => { setMenu(false); nav.current?.go(i) }}
         />
       </div>
+
+      {/* The scrollbar — the native one is hidden, this thin one stands in.
+          Right after the chrome, so it follows its light/dark tone. */}
+      <div className="sb" aria-hidden="true"><i className="sb__thumb" /></div>
 
       {/* One continuous surface behind every section. Sections no longer
           paint their own background, so there is no edge where two meet —
