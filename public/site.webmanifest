@@ -1,0 +1,13 @@
+{
+  "name": "Ruturaj Sonkamble — AI Engineer",
+  "short_name": "Ruturaj",
+  "description": "AI engineer in Pune building production AI.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#0c3b90",
+  "theme_color": "#0c3b90",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

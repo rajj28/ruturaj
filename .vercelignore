@@ -1,0 +1,18 @@
+# Source media and scratch files that live in the project root but are never
+# part of the build — keeps `vercel` deploys from uploading ~100 MB of them.
+/127737-739309170.mp4
+/armlift.mp4
+/Firefly*.mp4
+/*.png
+/*.jpg
+/tree-svgrepo-com (1).svg
+/tree-video-prompt.md
+/bcheck.js
+/bcheck.cjs
+/bcheck2.cjs
+/_p.js
+/dev.log
+/tree-assets
+/media-originals
+/dist
+/node_modules
