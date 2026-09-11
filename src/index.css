@@ -47,6 +47,16 @@ body {
   overflow-x: hidden;
 }
 
+/* The native scrollbar is hidden — the page still scrolls natively (body's
+   height mirrors the content), and a thin drawn one at the right edge stands
+   in for it (.sb in App.css), riding the same eased position as everything
+   else. Both spellings, for every engine. */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar { display: none; }
+
 /* ---------- the dithered sky ---------- */
 .sky-canvas {
   position: absolute;
