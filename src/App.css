@@ -1,0 +1,2880 @@
+/* ============================================================
+   LANDING PAGE
+   Everything hangs off the same grid the hairlines draw:
+   a fixed left/right gutter, a header bar, and two content
+   columns. Type only ever starts on one of those lines.
+   ============================================================ */
+
+.page {
+  position: relative;
+  z-index: 2;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- header ---------- */
+.bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  height: var(--bar);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 16px 34px;   /* mark clear of the rule; CTA centred in the right cell */
+}
+
+.mark {
+  width: 48px;
+  display: grid;
+  place-items: center;
+}
+
+.mark img { display: block; width: 38px; height: 38px; }
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.62rem 0.7rem 0.62rem 1.05rem;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.cta:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.34);
+}
+
+.cta span {
+  display: grid;
+  place-items: center;
+  width: 20px; height: 20px;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 1px;
+}
+
+/* ---------- chapter rail ----------
+   Ticks attach to the vertical rule and extend right. Inactive ones are
+   short and unlabelled; the active one lengthens and reveals its name. */
+.rail {
+  position: fixed;
+  left: var(--gutter);
+  top: calc(var(--gutter) + 62px);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  align-items: flex-start;
+}
+
+.rail a {
+  position: relative;
+  display: block;
+  width: 11px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.34);
+  transition: width 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+              background 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rail a::after {
+  content: attr(data-label);
+  position: absolute;
+  left: 42px;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  opacity: 0;
+  transform: translateY(-50%) translateX(-6px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.rail a:hover,
+.rail a.is-on {
+  width: 24px;
+  background: #fff;
+}
+
+.rail a:hover::after,
+.rail a.is-on::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* ---------- gutter dot marker ---------- */
+.dots {
+  position: fixed;
+  left: calc(var(--gutter) / 2);
+  top: calc(var(--gutter) + 34px);
+  transform: translateX(-50%);
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(2, 4px);
+  gap: 3px;
+}
+
+.dots i {
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+/* ---------- hero ---------- */
+.hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-inline: calc(var(--gutter) + var(--inset)) var(--gutter);
+}
+
+.kicker {
+  /* the leading dash starts ON the vertical rule, so the label hangs off
+     the grid the same way the chapter names do */
+  margin: 0 0 1.6rem calc(-1 * var(--inset));
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.kicker::before {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.hero h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(2.2rem, 5.8vw, 5.9rem);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+  font-variation-settings: 'SOFT' 0, 'WONK' 0;
+}
+
+.hero h1 .line { display: block; overflow: hidden; }
+
+/* words are individual spans so they can stagger up into place */
+.hero h1 .w {
+  display: inline-block;
+  transform: translateY(105%);
+  animation: rise 1.05s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: rgba(226, 239, 255, 0.85);
+}
+
+@keyframes rise {
+  to { transform: translateY(0); }
+}
+
+.lede {
+  margin: 5.2rem 0 0;
+  max-width: 34ch;
+  font-family: var(--serif);
+  font-size: clamp(1.05rem, 1.5vw, 1.5rem);
+  font-weight: 300;
+  line-height: 1.34;
+  letter-spacing: -0.015em;
+  color: rgba(238, 245, 255, 0.86);
+  opacity: 0;
+  animation: fade 1s ease 0.75s forwards;
+}
+
+@keyframes fade { to { opacity: 1; } }
+
+/* ---------- footer meta ---------- */
+.meta {
+  height: var(--bar);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-inline: calc(var(--gutter) + var(--inset)) var(--gutter);
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  opacity: 0;
+  animation: fade 1s ease 1.1s forwards;
+}
+
+.meta a { color: var(--ink-soft); text-decoration: none; }
+.meta a:hover { color: #fff; }
+
+.meta__mid { display: flex; gap: 2.6rem; }
+
+.scroll {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.scroll i {
+  width: 1px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  animation: tick 2s ease-in-out infinite;
+}
+
+@keyframes tick {
+  0%, 100% { transform: translateY(-3px); opacity: 0.3; }
+  50%      { transform: translateY(3px);  opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero h1 .w { transform: none; animation: none; }
+  .lede, .meta { opacity: 1; animation: none; }
+  .scroll i { animation: none; }
+}
+
+@media (max-width: 860px) {
+  .rail { display: none; }
+  .hero { padding-inline: calc(var(--gutter) + 16px); }
+  .meta__mid { display: none; }
+}
+
+
+/* ---------- page two ---------- */
+.sheet__inner {
+  position: relative;
+  z-index: 2;
+  padding: calc(var(--gutter) + 96px) var(--gutter)
+           var(--gutter) calc(var(--gutter) + var(--inset));
+}
+
+.sheet .kicker { color: var(--bone-soft); }
+.sheet .kicker::before { background: rgba(27, 29, 24, 0.45); }
+
+.sheet h2 {
+  margin: 0;
+  max-width: 18ch;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(2rem, 5.2vw, 5.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+}
+
+.sheet__lede {
+  margin: 2.4rem 0 0;
+  max-width: 40ch;
+  font-family: var(--serif);
+  font-size: clamp(1rem, 1.4vw, 1.4rem);
+  font-weight: 300;
+  line-height: 1.4;
+  color: var(--bone-soft);
+}
+
+
+/* ---------- persistent chrome ----------
+   Sits above every section. Its colours invert when the section under the
+   top band is a light one, so one element serves both grounds. */
+.chrome {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.chrome > * { pointer-events: auto; }
+
+.chrome .mark img,
+.chrome .cta,
+.chrome .rail a,
+.chrome .rail a::after,
+.chrome .dots i {
+  transition: filter 0.8s ease, background 0.8s ease,
+              color 0.8s ease, border-color 0.8s ease;
+}
+
+/* the mark is a white SVG, so invert it rather than shipping a second file */
+.chrome--light .mark img { filter: invert(1); }
+
+.chrome--light .cta {
+  color: var(--bone-ink);
+  border-color: rgba(27, 29, 24, 0.28);
+  background: rgba(27, 29, 24, 0.06);
+}
+.chrome--light .cta:hover {
+  background: rgba(27, 29, 24, 0.12);
+  border-color: rgba(27, 29, 24, 0.5);
+}
+.chrome--light .cta span { background: rgba(27, 29, 24, 0.14); }
+
+.chrome--light .dots i { background: rgba(27, 29, 24, 0.72); }
+
+.chrome--light .rail a { background: rgba(27, 29, 24, 0.30); }
+.chrome--light .rail a:hover,
+.chrome--light .rail a.is-on { background: var(--bone-ink); }
+.chrome--light .rail a::after { color: var(--bone-soft); }
+
+
+/* ---------- reading progress ----------
+   The gutter rule, drawn over again in full ink as you read, with the
+   percentage counted at its foot in the gutter column. */
+.chrome .progress {
+  position: fixed;
+  left: var(--gutter);
+  top: var(--gutter);
+  bottom: 0;
+  width: 1px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.progress__line {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.75);
+  transform-origin: center top;
+  transform: scaleY(0);
+  transition: background 0.8s ease;
+}
+
+.progress__num {
+  position: absolute;
+  left: calc(var(--gutter) / -2);
+  bottom: 22px;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+  transition: color 0.8s ease;
+}
+
+.chrome--light .progress__line { background: rgba(27, 29, 24, 0.7); }
+.chrome--light .progress__num { color: var(--bone-soft); }
+
+@media (max-width: 860px) {
+  .chrome .progress { left: 20px; }
+  .progress__num { display: none; }
+}
+
+/* ---------- scroll-linked reveals ----------
+   A piece with .rv (lift and fade) or .rvm (rise out of an .rv-line mask)
+   works out its own entrance from the nearest --enter (0–1, written by the
+   driver on the section's stage), offset by its own --d — the footer's
+   mechanism, shared. With no driver, --enter falls back to 1: all shown. */
+.rv,
+.rvm {
+  --t: clamp(0, (var(--enter, 1) - var(--d, 0)) / 0.4, 1);
+  --e: calc(1 - (1 - var(--t)) * (1 - var(--t)) * (1 - var(--t)));
+}
+
+.rv {
+  opacity: var(--t);
+  transform: translate3d(0, calc((1 - var(--e)) * 18px), 0);
+}
+
+.rv-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.rvm {
+  display: inline-block;
+  transform: translate3d(0, calc((1 - var(--e)) * 112%), 0);
+}
+
+/* ---------- the pointer ---------- */
+html.has-cursor,
+html.has-cursor * { cursor: none !important; }
+
+.cursor {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.cursor.is-on { opacity: 1; }
+
+.cursor__dot,
+.cursor__ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+
+.cursor__dot::before {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.25s ease;
+}
+
+.cursor__ring i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cursor__ring b {
+  font-family: var(--mono);
+  font-size: 0.52rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.cursor.is-link .cursor__ring i { width: 64px; height: 64px; }
+.cursor.is-link .cursor__dot::before { transform: scale(0); }
+.cursor.has-label .cursor__ring b { opacity: 1; }
+.cursor.is-down .cursor__ring i { width: 24px; height: 24px; }
+
+/* ---------- film grain ----------
+   A still monochrome noise tile, jittered a few steps a second on the
+   compositor. Normal blending at a few percent — cheap, and it gives the flat
+   bone and blue a surface. */
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 0.8s steps(5) infinite;
+}
+
+@keyframes grain {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-3%, 2%); }
+  40%  { transform: translate(2%, -3%); }
+  60%  { transform: translate(-2%, -1%); }
+  80%  { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain { animation: none; }
+  .rv, .rvm { transform: none; }
+}
+
+/* ---------- eased scroll container ---------- */
+.scroller {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  will-change: transform;
+}
+
+
+/* ---------- the apple reel ---------- */
+/* A tall scroll track: its extra height IS the scrub distance. At 420svh the
+   scrub travel is 3.2 screens — the ripening still leads (the driver's KEYS
+   table weights it), but no screen of it is dead air: the about copy and its
+   figures assemble over the first half. */
+.reel {
+  position: relative;
+  height: 420svh;
+  will-change: opacity;
+}
+
+/* the stage that gets held still while the track passes */
+.reel__pin {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.reel__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;            /* viewports are wider than 16:9, so it crops */
+  display: block;
+}
+
+/* The footage is mid-tone and busy. Darkening only the top and bottom bands
+   gives the chrome and the type something to sit on without dulling the
+   middle of the frame, where the apple actually is. */
+.reel__scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(20, 16, 12, 0.5) 0%, rgba(20, 16, 12, 0.16) 50%, transparent 72%),
+    linear-gradient(to bottom,
+      rgba(20, 16, 12, 0.55) 0%,
+      rgba(20, 16, 12, 0.12) 22%,
+      rgba(20, 16, 12, 0.00) 42%,
+      rgba(20, 16, 12, 0.30) 74%,
+      rgba(20, 16, 12, 0.72) 100%);
+}
+
+.reel__copy {
+  position: absolute;
+  left: calc(var(--gutter) + var(--inset));
+  right: var(--gutter);
+  bottom: calc(var(--rule-b) + 56px);
+  z-index: 2;
+  color: var(--ink);
+}
+
+.reel h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(2rem, 5.2vw, 5.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-shadow: 0 2px 30px rgba(20, 16, 12, 0.5);
+}
+
+.reel__lede {
+  margin: 1.8rem 0 0;
+  max-width: 34ch;
+  font-family: var(--serif);
+  font-size: clamp(0.95rem, 1.3vw, 1.3rem);
+  font-weight: 300;
+  line-height: 1.45;
+  color: rgba(242, 247, 255, 0.82);
+  text-shadow: 0 1px 20px rgba(20, 16, 12, 0.6);
+}
+
+.about__eyebrow {
+  margin: 0 0 1rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(242, 247, 255, 0.55);
+}
+
+.about__de-em {
+  font-style: italic;
+  color: rgba(242, 247, 255, 0.78);
+}
+
+.about .reel__lede {
+  max-width: 62ch;
+  font-size: clamp(0.95rem, 1.1vw, 1.12rem);
+}
+
+/* The figures, in the band under the lower rule — the same band the landing
+   page keeps for its meta line, so the grid carries them. */
+.reel__stats {
+  position: absolute;
+  left: calc(var(--gutter) + var(--inset));
+  right: calc(221px + var(--inset));
+  top: calc(100% - var(--rule-b) + 30px);
+  z-index: 2;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.2rem;
+  color: var(--ink);
+}
+
+.reel__stat {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(242, 247, 255, 0.24);
+}
+
+.reel__stat dd {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.9rem, 3.4vw, 3.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums lining-nums;
+  text-shadow: 0 2px 24px rgba(20, 16, 12, 0.5);
+}
+
+.reel__stat dt {
+  max-width: 22ch;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  line-height: 1.55;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(242, 247, 255, 0.62);
+}
+
+.about__chips {
+  margin: 1.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+.about__chips li {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(242, 247, 255, 0.85);
+  border: 1px solid rgba(242, 247, 255, 0.28);
+  border-radius: 999px;
+  padding: 0.4em 0.9em;
+  backdrop-filter: blur(4px);
+}
+
+@media (max-width: 860px) {
+  .reel__copy { left: 36px; right: 20px; bottom: 26%; }
+  .about .reel__lede { font-size: 0.88rem; }
+  .reel__stats {
+    left: 36px;
+    right: 20px;
+    top: auto;
+    bottom: 4%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem 1rem;
+  }
+  .reel__stat dd { font-size: 1.7rem; }
+}
+
+
+/* ---------- the desk ----------
+   A tall track like the reel: the statue raises his hand, the apple falls
+   into it, and then the camera leaves its side-on seat, swings behind his
+   shoulder and settles looking down at the laptop. One scrubbed clip, three
+   renders, no cut anywhere in it. */
+/* About 290svh of that is the clip itself — roughly 26svh of scroll per
+   second of footage, close to the reel's and the eat's pace, which is what
+   stops the tempo lurching when one section hands over to the next.
+
+   The other 660 is the wake, the push into the screen, the hold once it is
+   open, and the way back out. The driver takes those out of the track in real
+   pixels and gives the scrub whatever is left over, so changing this number
+   changes how long the clip lasts and nothing else. */
+.desk {
+  position: relative;
+  height: 1050svh;
+  color: var(--bone-ink);
+}
+
+.desk__pin {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  will-change: transform;
+}
+
+/* figure + apple travel together, so the push-in scales both */
+
+
+
+
+/* the apple that fell out of the previous section */
+
+
+
+
+/* ---------- the laptop screen, grown out of the machine ----------
+   .mac        covers the pin and does nothing but hold the frame
+   .mac__frame is the glass. Its rectangle is set every frame by the driver:
+               it starts as the screen in the video and ends as the whole page,
+               and it clips whatever is inside it.
+   .mac__desk  is the desktop, always laid out at full pin size and scaled to
+               cover the frame, so its proportions never distort — the frame
+               just shows less of it early on. */
+.mac {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* The glass is a clip, not a box. Animating width and height would dirty
+   layout on every frame of the move; a clip-path only repaints. */
+.mac__frame {
+  position: absolute;
+  inset: 0;
+  will-change: clip-path;
+  /* Clipped away to nothing until the driver's first frame, so a full-size
+     desktop never flashes before the geometry is known. */
+  clip-path: inset(50% 50% 50% 50%);
+}
+
+/* Placed and centred by its own transform rather than by the frame. Grid and
+   flex both refuse to centre an item that overflows its track — they fall back
+   to start alignment to avoid pushing content out of reach — and this item
+   overflows its frame for the whole first half of the move, which parked the
+   desktop against the frame's left edge instead of under the middle of it. */
+.mac__desk {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  will-change: transform;
+  /* No background. The footage already has a switched-off screen on this
+     laptop and this rectangle sits inside it, so the dark is the video's own
+     and there is nothing here to match it against — one less thing that can
+     be a shade out. */
+}
+
+.mac__screen {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  will-change: opacity;
+}
+
+/* ---------- the desk's selected-work rail ----------
+   Plain text over the footage, no glass — the statue sits on the left of the
+   picture with empty right, and the reading lives there in the same dark ink
+   as the eat rail, one entry sliding in after another. It reads on the bone
+   of the statue and the blue of the desktop alike because it stands aside
+   while the camera is inside the screen. */
+.desk__works {
+  position: absolute;
+  right: clamp(1.2rem, 2.4vw, 3rem);
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(30vw, 424px);
+  z-index: 5;
+  will-change: opacity;
+}
+
+/* Narrow screens have no empty right to spare — the desktop needs it all. */
+@media (max-width: 860px) {
+  .desk__works { display: none; }
+}
+
+/* ---------- the wake ---------- */
+.mac__boot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7%;
+  will-change: opacity;
+  /* Decoration only. It covers the whole glass and the bloom inside it covers
+     it again, so without this the close button spends its whole life behind an
+     invisible sheet of white and never gets clicked. Opacity zero does not
+     stop an element from swallowing a click. */
+  pointer-events: none;
+}
+
+/* Sized as a fraction of the screen, not in pixels, so it holds the right
+   proportion whether the glass is 350px wide inside a laptop or the width of
+   the whole page. A Mac's start-up mark is about six percent of screen width;
+   so is this. */
+.mac__boot-mark {
+  display: block;
+  width: 6%;
+  height: auto;
+  opacity: 0;
+  filter: brightness(0) invert(1);   /* the mark is dark artwork; the glass is not */
+  will-change: opacity;
+}
+
+.mac__boot-bar {
+  width: 16%;
+  height: 0.55%;
+  min-height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  overflow: hidden;
+}
+
+.mac__boot-bar i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  will-change: transform;
+}
+
+/* The backlight coming up to full and settling back. */
+.mac__boot-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  will-change: opacity;
+}
+
+/* The screen wakes into the same blue the first page was painted in. That is
+   the whole reason the wallpaper is not a photograph: it closes the loop back
+   to the top of the site instead of introducing a fourth palette. */
+.mac__wall {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 22% 8%, rgba(120, 175, 255, 0.42), transparent 60%),
+    radial-gradient(100% 80% at 88% 96%, rgba(11, 26, 66, 0.85), transparent 62%),
+    linear-gradient(168deg, #12459f 0%, #0c3b90 46%, #071f52 100%);
+}
+
+.mac__menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4.2%;
+  min-height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 1.6em;
+  padding-inline: 1.4em;
+  font-size: clamp(11px, 1.05vw, 13px);
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(10, 22, 52, 0.42);
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+}
+
+.mac__menu strong { font-weight: 600; }
+.mac__menu span { color: rgba(255, 255, 255, 0.72); }
+.mac__logo { font-size: 1.15em; line-height: 1; }
+.mac__menu-end { margin-left: auto; font-variant-numeric: tabular-nums; }
+
+/* ---------- the desktop: projects as Finder folders ----------
+   The dock and its clutter go, because everything a visitor opens is a
+   clickable path. Each folder is a real button; the desktop behind it
+   recomposes as the mouse moves, like a mac OS photograph would. */
+.mac__desk { pointer-events: none; }
+
+.folders {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -46%);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1.2rem, 3vw, 3rem) clamp(1rem, 4vw, 4.5rem);
+  padding: clamp(1rem, 4vw, 4rem);
+  pointer-events: auto;
+}
+
+.folder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55em;
+  padding: 1em 0.4em;
+  border: 0;
+  background: none;
+  color: #fff;
+  cursor: pointer;
+  font-family: var(--sans);
+  border-radius: 10px;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.folder:hover { background: rgba(255, 255, 255, 0.14); transform: translateY(-2px); }
+.folder:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* A folder is two rounded housings, one folded back over the other. Drawn
+   with plain borders so it can sit on the wallpaper's blue. */
+.folder__icon {
+  position: relative;
+  width: clamp(44px, 5.2vw, 62px);
+  height: clamp(34px, 4vw, 48px);
+  display: block;
+}
+.folder__tab,
+.folder__body {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 5px;
+}
+.folder__tab {
+  top: 0;
+  height: 0.34em;
+  width: 62%;
+  border-radius: 5px 5px 0 0;
+}
+.folder__body {
+  top: 0.22em;
+  bottom: 0;
+  border-radius: 5px;
+  box-shadow: 0 6px 18px rgba(6, 14, 36, 0.45);
+}
+
+.folder__name {
+  font-size: clamp(0.6rem, 1vw, 0.8rem);
+  font-weight: 500;
+  text-shadow: 0 1px 6px rgba(6, 14, 36, 0.6);
+  text-align: center;
+}
+
+.win {
+  position: absolute;
+  left: 50%;
+  top: 53%;
+  transform: translate(-50%, -50%);
+  width: min(1180px, 82%);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f7f7f4;
+  color: #1b1d18;
+  box-shadow:
+    0 40px 90px rgba(6, 14, 36, 0.55),
+    0 2px 0 rgba(255,255,255,0.6) inset;
+  font-family: var(--sans);
+  transform-origin: 50% 50%;
+  transition: opacity 0.34s ease, transform 0.34s cubic-bezier(0.36, 0, 0.66, -0.25);
+  pointer-events: auto;
+}
+
+/* Closing is a real dismissal, not a scroll position. */
+.mac[data-closed] .win {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.9);
+  pointer-events: none;
+}
+
+.win__bar {
+  position: relative;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding-inline: 14px;
+  background: linear-gradient(#ececea, #e2e2df);
+  border-bottom: 1px solid rgba(27,29,24,0.14);
+}
+
+.win__dots { display: flex; align-items: center; gap: 8px; }
+.win__dots i,
+.win__close {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: block;
+  padding: 0;
+  border: 0;
+}
+.win__dots i:nth-child(2) { background: #febc2e; }
+.win__dots i:nth-child(3) { background: #28c840; }
+
+/* The red light is the only one wired to anything, so it is the only one that
+   is a button. The other two stay decorative rather than pretending to be
+   controls that do nothing when you press them. */
+.win__close {
+  background: #ff5f57;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s ease;
+}
+.win__close::after {
+  content: '';
+  position: absolute;
+  inset: -6px;              /* a real hit target around a 12px dot */
+}
+.win__close:hover { background: #ff3b30; }
+.win__close:focus-visible {
+  outline: 2px solid #0c3b90;
+  outline-offset: 2px;
+}
+
+.win__title {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(27,29,24,0.62);
+  pointer-events: none;
+}
+
+.win__cols,
+.win__list li {
+  display: grid;
+  grid-template-columns: 1.1fr 2fr 0.5fr 1fr;
+  gap: 1rem;
+  padding: 0.7rem 1.25rem;
+  align-items: baseline;
+}
+
+.win__cols {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(27,29,24,0.45);
+  border-bottom: 1px solid rgba(27,29,24,0.10);
+}
+
+.win__list { margin: 0; padding: 0; list-style: none; }
+
+.win__list li {
+  font-size: 0.9rem;
+  color: rgba(27,29,24,0.66);
+  border-bottom: 1px solid rgba(27,29,24,0.06);
+}
+.win__list li:nth-child(odd) { background: rgba(27,29,24,0.02); }
+.win__name { font-weight: 500; color: var(--bone-ink); }
+
+.win__body {
+  padding: 1.5rem 1.5rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.win__row {
+  margin: 0;
+  font-size: clamp(1rem, 1.6vw, 1.35rem);
+  color: rgba(27, 29, 24, 0.78);
+  line-height: 1.5;
+}
+.win__row .win__name { margin-right: 0.25em; }
+
+.win__facts {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  color: rgba(27, 29, 24, 0.55);
+  text-transform: uppercase;
+}
+.win__facts span {
+  border: 1px solid rgba(27, 29, 24, 0.18);
+  border-radius: 999px;
+  padding: 0.28em 0.7em;
+}
+
+.win__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  align-self: flex-start;
+  margin-top: 0.3rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  background: #12459f;
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.win__link:hover { background: #0c3b90; transform: translateY(-1px); }
+.win__link span { font-size: 1.05em; line-height: 1; }
+
+
+
+
+
+@media (max-width: 860px) {
+  .desk__figure { right: -8%; height: 62svh; }
+  .win__body { padding: 1.1rem; }
+}
+
+
+/* ---------- the close button is real ---------- */
+.win__close,
+.win__min,
+.win__max {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: block;
+  padding: 0;
+  border: 0;
+}
+
+.win__close {
+  position: relative;
+  background: #ff5f57;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+.win__min { background: #febc2e; }
+.win__max { background: #28c840; }
+
+/* the macOS cross, revealed on hover of the group */
+.win__close::before,
+.win__close::after {
+  content: '';
+  position: absolute;
+  left: 2.5px;
+  top: 5.4px;
+  width: 7px;
+  height: 1.2px;
+  background: rgba(80, 0, 0, 0.65);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.win__close::before { transform: rotate(45deg); }
+.win__close::after { transform: rotate(-45deg); }
+
+.win__bar:hover .win__close::before,
+.win__bar:hover .win__close::after,
+.win__close:focus-visible::before,
+.win__close:focus-visible::after { opacity: 1; }
+
+.win__close:hover { filter: brightness(1.08); }
+.win__close:focus-visible { outline: 2px solid #1b1d18; outline-offset: 3px; }
+
+.win__foot {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 1.25rem;
+  border-top: 1px solid rgba(27,29,24,0.10);
+  background: rgba(27,29,24,0.03);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(27,29,24,0.45);
+}
+
+
+/* ---------- the god catching the apple ---------- */
+/* Every frame of the clip was re-levelled offline so its background is
+   exactly --bone, which is what the page paints behind it. The video is
+   therefore allowed to letterbox: `contain` keeps the whole 16:9 frame — the
+   top of his head and the base of the plinth both — at any viewport shape,
+   and the bars are indistinguishable from the page. `cover` would crop the
+   head off on a wide desktop, which is where the framing matters most. */
+.god {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  will-change: opacity, transform;
+  pointer-events: none;
+}
+
+.god__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+
+/* ---------- he eats it ----------
+   5.08s of footage at about the pace the reel and the desk run at, plus a
+   quarter-viewport of dissolve at the front and just over one of sparkles
+   falling after the footage has stopped. */
+.eat {
+  position: relative;
+  height: 400svh;
+  color: var(--bone-ink);
+  /* Pulled up a whole viewport so this track OVERLAPS the end of the desk's.
+     Both pins are 100svh and both clamp to their own track edges, so at the
+     moment the desk's runs out the two are lying exactly on top of each other
+     — which is the only way a cross-fade between them means anything. Without
+     it the desk finishes fading out four tenths of a screen before this one
+     starts fading in, and you scroll through a gap of bare bone. */
+  margin-top: -100svh;
+}
+
+.eat__pin {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  will-change: transform, opacity;
+  opacity: 0;
+}
+
+/* Same treatment as the god: every frame was re-levelled to exactly --bone, so
+   the clip can simply letterbox into the page and the bars are the page. */
+.eat__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Over the footage, under nothing. The glints are drawn rather than baked so
+   they can fall where they are told and run backwards on the way up. */
+.eat__sparks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* The selected-work rail. The bite is shot with the statue on the left and
+   the right of the picture as empty space, so this sits in that space and the
+   heading reads dark — it is over the footage (light bone), not over the page. */
+.eat__works {
+  position: absolute;
+  right: clamp(1.6rem, 4vw, 3.5rem);
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(30vw, 424px);
+  z-index: 2;
+  will-change: opacity, transform;
+}
+
+.eat__works-head { will-change: opacity, transform; }
+
+.eat__works-eyebrow {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(27, 29, 24, 0.62);
+}
+
+.eat__works-eyebrow::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  flex: none;
+  transform: rotate(45deg);
+  background: rgba(27, 95, 176, 0.8);
+}
+
+.eat__works-title {
+  margin: 0.5rem 0 0.9rem;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(1.35rem, 2.1vw, 1.6rem);
+  line-height: 1.12;
+  color: var(--bone-ink);
+}
+
+.eat__works-rule {
+  position: relative;
+  height: 1px;
+  margin-bottom: 1.35rem;
+  background: rgba(27, 29, 24, 0.18);
+  overflow: hidden;
+}
+
+.eat__works-prog {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  background: rgba(27, 95, 176, 0.85);
+}
+
+/* One rail entry — a video preview up top, then a proper title, a couple of
+   lines of summary and nothing but plain links. All entries sit in the SAME
+   slot: absolutely stacked, so the driver's crossfade swaps them in place and
+   the next one is read exactly where the last one was, never shifted down. */
+.works {
+  position: relative;
+  min-height: min(58vh, 470px);
+}
+
+.works__item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  will-change: opacity;
+}
+
+.works__preview {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1.15rem;
+  box-shadow:
+    0 18px 40px -22px rgba(27, 29, 24, 0.7),
+    inset 0 0 0 1px rgba(27, 29, 24, 0.14);
+  background:
+    radial-gradient(120% 90% at 25% 15%, rgba(140, 190, 255, 0.5), transparent 55%),
+    linear-gradient(150deg, #12459f, #071f52);
+}
+
+.works__preview img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.works__preview:hover img { transform: scale(1.05); }
+
+/* a film-frame scrim: darker on the sides, a touch brighter at the centre,
+   so the still reads inside its notch instead of floating on the page */
+.works__preview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(7, 24, 51, 0.18), transparent 30%, transparent 62%, rgba(7, 24, 51, 0.22));
+  pointer-events: none;
+}
+
+.works__play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: rgba(10, 18, 36, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  padding-left: 0.14em;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  transition: background 0.3s, transform 0.3s;
+}
+
+.works__preview:hover .works__play {
+  background: rgba(10, 18, 36, 0.8);
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+.works__len {
+  position: absolute;
+  right: 0.55rem;
+  bottom: 0.55rem;
+  z-index: 1;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: rgba(7, 24, 51, 0.82);
+  border-radius: 5px;
+  padding: 0.2em 0.55em;
+}
+
+.works__no {
+  margin: 0 0 0.3rem;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(27, 95, 176, 0.85);
+}
+
+.works__item-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 1.65rem;
+  line-height: 1.18;
+  color: var(--bone-ink);
+}
+
+.works__item-summary {
+  margin: 0.55rem 0 0.7rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: rgba(27, 29, 24, 0.8);
+  max-width: 46ch;
+}
+
+.works__item-links {
+  margin: 0;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(27, 29, 24, 0.14);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.8rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+}
+
+.works__item-links a {
+  color: #1b5fb0;
+  text-decoration: none;
+  text-underline-offset: 2px;
+  transition: color 0.25s;
+}
+
+.works__item-links a:hover {
+  color: #12459f;
+  text-decoration: underline;
+}
+
+.works__tag {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #1b5fb0;
+  border: 1px solid rgba(27, 95, 176, 0.45);
+  border-radius: 999px;
+  padding: 0.18em 0.62em;
+}
+
+@media (max-width: 860px) {
+  .eat__works {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: 4.5%;
+    transform: translateX(-50%);
+    width: min(352px, 88vw);
+  }
+  .eat__works-title { margin-bottom: 0.9rem; }
+}
+
+
+/* the single surface every section fades over */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: var(--bone);
+}
+
+.screen { will-change: opacity; }
+
+
+/* ============================================================
+   THE SKY — a return to the blue, with rising clouds
+   Tall track + pinned stage, like the reel and the desk. The same
+   dithered-blue canvas the hero opened on, but now the clouds come
+   up out of the bottom as you scroll (right, then left) and the
+   bite's sparkles keep falling through, on their way to the ground.
+   ============================================================ */
+.sky {
+  position: relative;
+  height: 380svh;
+  overflow: hidden;
+}
+
+.sky__pin {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  will-change: transform, opacity;
+  opacity: 0;
+}
+
+.sky__pin .sky-canvas { z-index: 0; }
+
+
+/* ---------- the experience, on the sky ----------
+   Two columns hung on the landing page's grid. The timeline sits in a
+   soft-edged band of deeper blue — no box, no border — so the clouds rising
+   behind it dim instead of fighting the type. A glint (the site's own
+   four-point spark) runs down the spine and lights each place as it reaches
+   it. Everything reads from --enter and --g, written by the driver. */
+.xp {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 6rem);
+  padding: calc(var(--gutter) + 2vh) calc(221px + var(--inset)) 5vh calc(var(--gutter) + var(--inset));
+  color: var(--ink);
+  pointer-events: none;
+}
+
+.xp a,
+.xp button { pointer-events: auto; }
+
+.xp__kicker {
+  margin: 0 0 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.xp__kicker::before {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: currentColor;
+}
+
+.xp__title {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(2.4rem, 4.8vw, 4.6rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-shadow: 0 2px 30px rgba(6, 14, 36, 0.35);
+}
+
+.xp__title em {
+  font-style: italic;
+  color: rgba(226, 239, 255, 0.85);
+}
+
+.xp__intro {
+  margin: 1.6rem 0 0;
+  max-width: 32ch;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1rem, 1.3vw, 1.25rem);
+  line-height: 1.4;
+  color: rgba(238, 245, 255, 0.86);
+  text-shadow: 0 1px 18px rgba(6, 14, 36, 0.4);
+}
+
+.xp__meta {
+  margin: 2rem 0 0;
+  display: flex;
+  gap: 2.4rem;
+}
+
+.xp__meta div {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.45rem;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.26);
+}
+
+.xp__meta dd {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.8rem, 2.6vw, 2.4rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.xp__meta dt {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* the band of deeper sky — its soft edge is a wide shadow of its own colour */
+.xp__panel {
+  padding: clamp(1.1rem, 3vh, 2.2rem) clamp(1.1rem, 2.4vw, 2.4rem);
+  border-radius: 28px;
+  background: rgba(2, 44, 112, 0.46);
+  box-shadow: 0 0 70px 36px rgba(2, 44, 112, 0.46);
+}
+
+.xp__track {
+  position: relative;
+  padding-left: 2.4rem;
+}
+
+/* the spine: a faint rule, filled in behind the glint as it travels */
+.xp__spine {
+  position: absolute;
+  left: 0.45rem;
+  top: 0.6rem;
+  bottom: 0.6rem;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.xp__spine::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 230, 168, 0.95));
+  transform-origin: center top;
+  transform: scaleY(var(--g, 1));
+}
+
+.xp__glint {
+  position: absolute;
+  left: -7.5px;
+  top: calc(var(--g, 1) * 100%);
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  opacity: clamp(0, var(--g, 1) * 30, 1);
+  filter: drop-shadow(0 0 7px rgba(255, 230, 168, 0.95));
+}
+
+.xp__glint svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: #fff4d8;
+  animation: shine 4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.xp__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: clamp(1rem, 3vh, 1.9rem);
+}
+
+/* --lit: 0 until the glint reaches this place, fully on as it arrives.
+   --at is measured by the component: where this node sits along the spine. */
+.xp__item {
+  position: relative;
+  --lit: clamp(0, (var(--g, 1) - var(--at, 0)) * 16 + 1, 1);
+}
+
+.xp__node {
+  position: absolute;
+  left: calc(-1.95rem - 5px);
+  top: 0.3rem;
+  width: 10px;
+  height: 10px;
+  transform: rotate(45deg);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, var(--lit));
+  box-shadow: 0 0 calc(var(--lit) * 16px) rgba(255, 230, 168, calc(var(--lit) * 0.9));
+}
+
+.xp__years {
+  margin: 0 0 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.xp__co {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.8rem;
+  font-weight: 400;
+}
+
+.xp__co strong {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(1.45rem, 2.2vw, 2rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.xp__tag {
+  padding: 0.28em 0.7em;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.xp__role {
+  margin: 0.35rem 0 0;
+  font-family: var(--sans);
+  font-size: 0.93rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.xp__desc {
+  margin: 0.35rem 0 0;
+  max-width: 54ch;
+  font-family: var(--sans);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: rgba(236, 244, 255, 0.74);
+}
+
+.xp__link {
+  margin-top: 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.5em 0.95em;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.xp__link span { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+.xp__link:hover { background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.6); }
+.xp__link:hover span { transform: translateX(3px); }
+.xp__link:focus-visible { outline: 1px solid #fff; outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .xp__glint svg { animation: none; }
+}
+
+/* a short desktop window: the intro gives way so the list keeps its air */
+@media (max-height: 780px) and (min-width: 861px) {
+  .xp__intro { display: none; }
+  .xp__list { gap: 0.9rem; }
+  .xp__desc { font-size: 0.8rem; }
+}
+
+@media (max-width: 860px) {
+  .xp {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    gap: 1.4rem;
+    padding: calc(var(--gutter) + 64px) 20px 20px 36px;
+  }
+  .xp__title { font-size: 2.3rem; }
+  .xp__title .rv-line { display: inline-block; margin-right: 0.25em; }
+  .xp__intro,
+  .xp__meta { display: none; }
+  .xp__panel { padding: 1rem 0.9rem; box-shadow: 0 0 40px 18px rgba(2, 44, 112, 0.46); }
+  .xp__track { padding-left: 1.9rem; }
+  .xp__node { left: calc(-1.45rem - 5px); }
+  .xp__list { gap: 1rem; }
+  .xp__co strong { font-size: 1.35rem; }
+  .xp__desc { font-size: 0.8rem; }
+}
+@media (max-width: 860px) {
+  .sky .gv--r, .sky .gx--br { display: none; }
+}
+
+/* ============================================================
+   THE FOOTER — where sparkles land and a tree grows
+   Tall track + pinned stage, like the reel and the desk. Bone,
+   like the statue sections around it, so the ground reads quiet
+   and the tree at the end is the one growing thing on the page.
+   ============================================================ */
+.footer {
+  position: relative;
+  height: 560svh;
+  overflow: hidden;
+  color: var(--bone-ink);
+}
+
+.footer__pin {
+  /* the ground line — on the landing page's lower rule on a desktop, lower
+     on a phone. Mirrors footGround() in the driver. */
+  --ground: 74%;
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  will-change: transform, opacity;
+  opacity: 0;
+}
+
+/* ---------- the sparkles that stream in from the bite ---------- */
+.footer__sparks {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ---------- the ground ---------- */
+/* The ground is the page's lower rule: one hairline edge to edge, the plant
+   growing out of it on the left, the contact column standing on it on the
+   right, and the name set beneath it. */
+.footer__ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--ground);
+  height: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* a deep bone line — darker than the page, the way a horizon reads */
+.footer__ground-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: rgba(27, 29, 24, 0.3);
+}
+
+/* a hidden seed sits on the ground; the plant grows out of it. The driver
+   moves it under the sparkle stream, where the plant roots. */
+.footer__ground-seed {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -3px 0 0 -3px;
+  width: 6px;
+  height: 6px;
+  color: #b68b2e;
+  opacity: 0.9;
+}
+
+.footer__ground-seed svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: #b68b2e;
+  animation: shine 7s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* ---------- the plant ---------- */
+/* One transparent canvas over the whole stage, drawn every frame by the
+   driver (components/plant.js). It sits under the ground line and the seed
+   glint (z 1), so the line crosses the stem's foot and the seed shows at
+   its root. */
+.footer__tree {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ---------- the contact layer ---------- */
+/* Typeset straight onto the bone, on the landing page's own grid: gutter
+   rules, the top rule, markers where the ground crosses them. The driver
+   sets --frame and --enter; everything below derives its reveal from them. */
+.fc {
+  --fe: calc(1 - (1 - var(--frame, 0)) * (1 - var(--frame, 0)) * (1 - var(--frame, 0)));
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  color: var(--bone-ink);
+}
+
+/* Each piece reveals itself off --enter, offset by its own --d, eased out.
+   .in lifts and fades; .rise slides up out of a mask (or out of the page). */
+.fc .in,
+.fc .rise {
+  --t: clamp(0, (var(--enter, 0) - var(--d, 0)) / 0.4, 1);
+  --e: calc(1 - (1 - var(--t)) * (1 - var(--t)) * (1 - var(--t)));
+}
+
+.fc .in {
+  opacity: var(--t);
+  transform: translate3d(0, calc((1 - var(--e)) * 18px), 0);
+}
+
+.fc .rise {
+  display: inline-block;
+  transform: translate3d(0, calc((1 - var(--e)) * 130%), 0);
+}
+
+/* ---------- frame: the grid, drawn in as the footer arrives ---------- */
+.fc__rule {
+  position: absolute;
+  display: block;
+  background: var(--bone-rule);
+}
+
+.fc__rule--t {
+  left: 0;
+  right: 0;
+  top: var(--gutter);
+  height: 1px;
+  transform-origin: left center;
+  transform: scaleX(var(--fe));
+}
+
+.fc__rule--l,
+.fc__rule--r {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform-origin: center top;
+  transform: scaleY(var(--fe));
+}
+
+.fc__rule--l { left: var(--gutter); }
+.fc__rule--r { right: 221px; }
+
+/* the site's four-point markers, where the ground crosses the gutters */
+.fc__x {
+  position: absolute;
+  top: var(--ground);
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  transform: scale(var(--fe)) rotate(calc((1 - var(--fe)) * -90deg));
+}
+
+.fc__x--l { left: var(--gutter); }
+.fc__x--r { right: 221px; margin: -8px -8px 0 0; }
+
+.fc__x svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: var(--bone-ink);
+  animation: shine 7s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.fc__x--r svg { animation-delay: 2.7s; }
+
+/* ---------- the contact column, standing on the ground ---------- */
+.fc__col {
+  position: absolute;
+  left: 50%;
+  right: calc(221px + var(--inset));
+  bottom: calc(100% - var(--ground) + clamp(1.4rem, 4.5vh, 3rem));
+  pointer-events: auto;
+}
+
+.fc__kicker {
+  margin: 0 0 clamp(0.9rem, 2.4vh, 1.5rem);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-soft);
+}
+
+.fc__kicker::before {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: currentColor;
+}
+
+.fc__title {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: min(5vw, 7.6vh, 6rem);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+}
+
+/* each line is a mask the words rise up through, with room for descenders */
+.fc__line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.fc__title em {
+  font-style: italic;
+  letter-spacing: -0.03em;
+}
+
+.fc__lede {
+  margin: clamp(0.9rem, 2.6vh, 1.6rem) 0 0;
+  max-width: 30ch;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1rem, 1.2vw, 1.2rem);
+  line-height: 1.38;
+  letter-spacing: -0.01em;
+  color: var(--bone-soft);
+}
+
+.fc__mail-row {
+  margin: clamp(1.2rem, 3.4vh, 2.2rem) 0 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.1rem;
+}
+
+/* the address is the call to action: a faint rule under it at rest, an ink
+   rule drawn across it on hover, and the arrow leaning out */
+.fc__mail {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35em;
+  padding-bottom: 0.2em;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.1rem, 1.7vw, 1.75rem);
+  letter-spacing: -0.02em;
+  color: var(--bone-ink);
+  text-decoration: none;
+  background:
+    linear-gradient(var(--bone-ink), var(--bone-ink)) 0 100% / 0% 1px no-repeat,
+    linear-gradient(var(--bone-rule), var(--bone-rule)) 0 100% / 100% 1px no-repeat;
+  transition: background-size 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fc__mail span {
+  font-size: 0.7em;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fc__mail:hover { background-size: 100% 1px, 100% 1px; }
+.fc__mail:hover span { transform: translate(0.14em, -0.14em); }
+
+.fc__copy {
+  padding: 0.55em 0.85em;
+  border: 1px solid var(--bone-rule);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--bone-soft);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+
+.fc__copy:hover { color: var(--bone-ink); border-color: rgba(27, 29, 24, 0.4); }
+.fc__copy.is-done { color: var(--bone); background: var(--bone-ink); border-color: var(--bone-ink); }
+
+/* the facts, as a 2x2 spec table between hairlines */
+.fc__meta {
+  margin: clamp(1.2rem, 3.4vh, 2.2rem) 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 1.6rem;
+}
+
+.fc__meta > div {
+  padding: 0.8rem 0 0.9rem;
+  border-top: 1px solid var(--bone-rule);
+}
+
+.fc__meta dt {
+  margin: 0 0 0.45rem;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(27, 29, 24, 0.5);
+}
+
+.fc__meta dd {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--sans);
+  font-size: 0.86rem;
+  color: var(--bone-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.fc__meta a {
+  padding-bottom: 1px;
+  color: inherit;
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1px no-repeat;
+  transition: background-size 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fc__meta a + a { margin-left: 0.55rem; }
+.fc__meta a::after { content: '\2197'; margin-left: 0.25em; font-size: 0.8em; opacity: 0.5; }
+.fc__meta a:hover { background-size: 100% 1px; }
+
+.fc__faint { color: rgba(27, 29, 24, 0.45); }
+
+/* available: the plant's green, breathing */
+.fc__dot {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4f8a3d;
+}
+
+.fc__dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: fc-pulse 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+@keyframes fc-pulse {
+  0%       { transform: scale(1); opacity: 0.55; }
+  70%, 100% { transform: scale(3.2); opacity: 0; }
+}
+
+.fc a:focus-visible,
+.fc button:focus-visible {
+  outline: 1px solid var(--bone-ink);
+  outline-offset: 4px;
+}
+
+/* ---------- under the ground: the strip, and the name ---------- */
+.fc__strip {
+  position: absolute;
+  left: calc(var(--gutter) + var(--inset));
+  right: calc(221px + var(--inset));
+  top: calc(var(--ground) + 14px);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(27, 29, 24, 0.5);
+}
+
+.fc__strip span { white-space: nowrap; }
+
+/* The name, fitted to the band by the component and cropped by the bottom
+   of the page, so it reads as growing out of the ground above it. */
+.fc__band {
+  position: absolute;
+  left: calc(var(--gutter) + var(--inset));
+  right: calc(221px + var(--inset));
+  top: var(--ground);
+  bottom: 0;
+  pointer-events: auto;
+}
+
+.fc__word {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: inline-block;
+  white-space: nowrap;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 100px;
+  line-height: 0.8;
+  letter-spacing: -0.045em;
+  color: var(--bone-ink);
+  /* lifted just enough that the j keeps its tail; only the very bottom of
+     the descender meets the page edge. The fit reads --lift too. */
+  --lift: 0.2em;
+  transform: translateY(calc(-1 * var(--lift)));
+  user-select: none;
+}
+
+.fc__word-line { display: inline-block; }
+.fc__word-line.is-it { font-style: italic; }
+
+.fc__ch { transition: font-variation-settings 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fc__dot::after { animation: none; }
+  .fc__x svg { animation: none; opacity: 0.5; }
+}
+
+/* a short desktop window: drop the one-liner so the column clears the bar */
+@media (max-height: 760px) and (min-width: 861px) {
+  .fc__lede { display: none; }
+}
+
+@media (max-width: 860px) {
+  .footer__pin { --ground: 80%; }
+  .fc__strip span + span { display: none; }
+  .fc__rule--l,
+  .fc__x--l { left: 20px; }
+  .fc__rule--r,
+  .fc__x--r { display: none; }
+  .fc__col { left: 36px; right: 20px; top: calc(var(--gutter) + 64px); bottom: auto; }
+  .fc__title { font-size: min(12vw, 4.6rem); }
+  .fc__lede { display: none; }
+  .fc__mail { font-size: 1.1rem; }
+  .fc__mail-row,
+  .fc__meta { margin-top: 1.3rem; }
+  .fc__meta { column-gap: 1rem; }
+  .fc__strip,
+  .fc__band { left: 36px; right: 20px; }
+}
+
+/* a phone: the name breaks onto two lines to fill the band, sitting a little
+   lower so it clears the strip */
+@media (max-width: 560px) {
+  .fc__word-line { display: block; }
+  .fc__word { --lift: -0.02em; }
+}
+
+/* ============================================================
+   THE CASE STUDY WINDOW — what a Finder folder opens
+   A real window on the desktop: all three lights work, arrows page
+   through the projects, and the body scrolls on its own.
+   ============================================================ */
+.win {
+  top: 52%;
+  width: min(1120px, 92%);
+  height: min(86%, 800px);
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  animation: win-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.win.is-max { width: 97%; height: 93%; }
+
+@keyframes win-in {
+  from { opacity: 0; transform: translate(-50%, -47%) scale(0.965); }
+}
+
+.win__bar { flex: none; }
+.win__dots button { cursor: pointer; }
+
+.win__nav {
+  position: relative;
+  z-index: 1;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: rgba(27, 29, 24, 0.55);
+  font-variant-numeric: tabular-nums;
+}
+
+.win__nav button {
+  width: 26px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(27, 29, 24, 0.16);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--bone-ink);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.win__nav button:hover { background: #fff; border-color: rgba(27, 29, 24, 0.34); }
+.win__nav button:focus-visible { outline: 2px solid #1b5fb0; outline-offset: 2px; }
+
+.win__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: clamp(1.3rem, 3vw, 2.6rem) clamp(1.2rem, 3.4vw, 3rem) 2.6rem;
+  scrollbar-width: thin;
+}
+
+/* ---------- head ---------- */
+.cs__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.2rem 2rem;
+  align-items: end;
+  padding-bottom: 1.6rem;
+  border-bottom: 1px solid rgba(27, 29, 24, 0.12);
+}
+
+.cs__kicker {
+  margin: 0 0 0.7rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #1b5fb0;
+}
+
+.cs__title {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--bone-ink);
+}
+
+.cs__tagline {
+  margin: 0.75rem 0 0;
+  max-width: 54ch;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  line-height: 1.35;
+  color: rgba(27, 29, 24, 0.72);
+}
+
+.cs__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.cs__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.62em 1.05em;
+  border: 1px solid rgba(27, 29, 24, 0.2);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--bone-ink);
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.cs__btn:hover { border-color: rgba(27, 29, 24, 0.46); transform: translateY(-1px); }
+.cs__btn--primary { background: #12459f; border-color: #12459f; color: #fff; }
+.cs__btn--primary:hover { background: #0c3b90; border-color: #0c3b90; }
+.cs__btn:focus-visible { outline: 2px solid #1b5fb0; outline-offset: 3px; }
+
+/* ---------- section labels ---------- */
+.cs__label {
+  margin: 0 0 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(27, 29, 24, 0.52);
+}
+
+.cs__label::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  flex: none;
+  transform: rotate(45deg);
+  background: rgba(27, 95, 176, 0.85);
+}
+
+/* ---------- how it works ---------- */
+.cs__how {
+  margin-top: 1.8rem;
+  padding: clamp(1rem, 2.2vw, 1.6rem);
+  border: 1px solid rgba(27, 29, 24, 0.1);
+  border-radius: 16px;
+  background: #fff;
+}
+
+.cs__steps {
+  margin: 1.3rem 0 0;
+  padding: 1.2rem 0 0;
+  border-top: 1px solid rgba(27, 29, 24, 0.08);
+  list-style: none;
+  counter-reset: step;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem 2rem;
+}
+
+.cs__steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 1.9rem minmax(0, 1fr);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: rgba(27, 29, 24, 0.8);
+}
+
+.cs__steps li::before {
+  content: counter(step, decimal-leading-zero);
+  padding-top: 0.2rem;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  color: #1b5fb0;
+}
+
+/* ---------- what · why · where ---------- */
+.cs__grid {
+  margin-top: 2.1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.6rem 2.4rem;
+}
+
+.cs__grid p:not(.cs__label),
+.cs__grid li {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: rgba(27, 29, 24, 0.8);
+}
+
+.cs__grid p:not(.cs__label) { margin: 0; }
+
+.cs__grid ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.cs__grid li {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.cs__grid li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.8em;
+  width: 6px;
+  height: 1px;
+  background: currentColor;
+}
+
+/* ---------- proof · stack ---------- */
+.cs__foot {
+  margin-top: 2.1rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid rgba(27, 29, 24, 0.12);
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 1.6rem 2.4rem;
+}
+
+.cs__foot--solo { grid-template-columns: minmax(0, 1fr); }
+
+.cs__proof ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.1rem;
+}
+
+.cs__proof strong {
+  display: block;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.7rem, 2.6vw, 2.2rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--bone-ink);
+}
+
+.cs__proof span {
+  display: block;
+  margin-top: 0.45rem;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  line-height: 1.5;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(27, 29, 24, 0.56);
+}
+
+.cs__stack ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.cs__stack li {
+  padding: 0.36em 0.78em;
+  border: 1px solid rgba(27, 29, 24, 0.16);
+  border-radius: 999px;
+  background: rgba(27, 29, 24, 0.02);
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.04em;
+  color: rgba(27, 29, 24, 0.76);
+}
+
+/* ---------- the system diagram ---------- */
+.dg { margin: 0; }
+.dg__scroll { overflow-x: auto; padding-bottom: 0.2rem; }
+.dg svg { display: block; margin: 0 auto; height: auto; overflow: visible; }
+
+.dg__node rect { fill: #fff; stroke: rgba(27, 29, 24, 0.3); stroke-width: 1; }
+.dg__node--model rect { fill: #e9f0fb; stroke: #1b5fb0; }
+.dg__node--store rect { fill: #f6f0e1; stroke: #b68b2e; }
+.dg__node--io rect { fill: #fbfbf8; stroke: rgba(27, 29, 24, 0.5); stroke-dasharray: 4 3; }
+.dg__store-line { fill: none; stroke: #b68b2e; opacity: 0.5; }
+
+.dg__label {
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  fill: var(--bone-ink);
+  text-anchor: middle;
+}
+
+.dg__sub {
+  font-family: var(--mono);
+  font-size: 8.6px;
+  letter-spacing: 0.02em;
+  fill: rgba(27, 29, 24, 0.56);
+  text-anchor: middle;
+}
+
+.dg__wire { fill: none; stroke: rgba(27, 29, 24, 0.3); stroke-width: 1.2; }
+.dg marker path { fill: rgba(27, 29, 24, 0.45); }
+
+/* a bead of blue running each wire the way the data moves */
+.dg__flow {
+  fill: none;
+  stroke: #1b5fb0;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 18;
+  animation: dg-flow 1.5s linear infinite;
+}
+
+@keyframes dg-flow { to { stroke-dashoffset: -18.1; } }
+
+.dg__elabel {
+  font-family: var(--mono);
+  font-size: 8.4px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  fill: #1b5fb0;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 3px;
+}
+
+.dg__legend {
+  margin-top: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.3rem;
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(27, 29, 24, 0.5);
+}
+
+.dg__legend span { display: inline-flex; align-items: center; gap: 0.45rem; }
+
+.dg__legend i {
+  width: 14px;
+  height: 10px;
+  border: 1px solid rgba(27, 29, 24, 0.3);
+  border-radius: 3px;
+  background: #fff;
+}
+
+.dg__legend .k-model { background: #e9f0fb; border-color: #1b5fb0; }
+.dg__legend .k-store { background: #f6f0e1; border-color: #b68b2e; }
+.dg__legend .k-io { border-style: dashed; background: #fbfbf8; }
+
+/* only where the diagram is wider than its window */
+.dg__hint { display: none !important; color: #1b5fb0; }
+
+@media (max-width: 860px) {
+  .dg__hint { display: inline-flex !important; flex-basis: 100%; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dg__flow { animation: none; opacity: 0; }
+  .win { animation: none; }
+}
+
+@media (max-width: 860px) {
+  .win { width: 96%; height: 90%; }
+  .win__title { display: none; }
+  .cs__head,
+  .cs__steps,
+  .cs__grid,
+  .cs__foot { grid-template-columns: minmax(0, 1fr); }
+  .cs__links { justify-content: flex-start; }
+}
+
+/* ============================================================
+   THE CHROME'S CONTROLS — mark, dots, curtain, menu
+   ============================================================ */
+
+/* the tree mark is the way home */
+.chrome .mark {
+  cursor: pointer;
+  border-radius: 8px;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chrome .mark:hover { transform: scale(0.92); }
+.chrome .mark:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
+
+/* the four dots are the menu's toggle: a bigger hit area than they look,
+   and they turn into a diamond while the menu is open */
+.chrome .dots {
+  top: calc(var(--gutter) + 24px);
+  z-index: 7;
+  padding: 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chrome .dots i { transition: background 0.3s ease; }
+.chrome .dots:hover i { background: #fff; }
+.chrome--light .dots:hover i { background: var(--bone-ink); }
+.chrome .dots[aria-expanded='true'] { transform: translateX(-50%) rotate(45deg) scale(1.2); }
+.chrome .dots:focus-visible { outline: 1px solid currentColor; outline-offset: 2px; }
+
+/* the rail and the spine step aside while the menu is up */
+.chrome.is-menu .rail,
+.chrome.is-menu .progress {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s 0.3s;
+}
+
+/* the cut a long jump hides behind */
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  background: var(--curtain, #dedfd4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.curtain.is-in { opacity: 1; pointer-events: auto; }
+
+.curtain::after {
+  content: attr(data-label);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--curtain-ink, #1b1d18);
+  opacity: 0.72;
+}
+
+/* ---------- the chapter menu ---------- */
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  padding: calc(var(--gutter) + 36px) calc(221px + var(--inset)) 26px calc(var(--gutter) + var(--inset));
+  background: #0c3b90;
+  color: var(--ink);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0.45s;
+}
+
+.menu.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* the landing page's own hairline grid, drawn under the list */
+.menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--gutter);
+  right: 221px;
+  border-left: 1px solid var(--rule);
+  border-right: 1px solid var(--rule);
+  pointer-events: none;
+}
+
+.menu::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--gutter);
+  height: 1px;
+  background: var(--rule);
+  pointer-events: none;
+}
+
+.menu__list {
+  position: relative;
+  z-index: 1;
+  align-self: center;
+  display: grid;
+}
+
+.menu__item {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 1rem;
+  width: 100%;
+  padding: clamp(0.55rem, 1.6vh, 1rem) 0;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i) * 55ms + 80ms),
+    opacity 0.5s ease calc(var(--i) * 55ms + 80ms);
+}
+
+.menu__item:last-child { border-bottom: 1px solid rgba(255, 255, 255, 0.14); }
+.menu.is-open .menu__item { opacity: 1; transform: none; }
+
+.menu__n {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  transition: color 0.3s ease;
+}
+
+.menu__label {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(2.2rem, 7vh, 4.8rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease;
+}
+
+.menu__arrow {
+  font-size: 1.5rem;
+  opacity: 0;
+  transform: translateX(-12px);
+  transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.menu__item:hover .menu__label,
+.menu__item:focus-visible .menu__label { transform: translateX(16px); font-style: italic; }
+.menu__item:hover .menu__arrow,
+.menu__item:focus-visible .menu__arrow { opacity: 1; transform: none; }
+.menu__item:hover .menu__n,
+.menu__item:focus-visible .menu__n { color: #fff; }
+.menu__item:focus-visible { outline: none; }
+
+/* where you are now */
+.menu__item.is-on .menu__n::after {
+  content: ' · here';
+  color: #fff;
+}
+.menu__item.is-on .menu__label { color: rgba(226, 239, 255, 0.72); font-style: italic; }
+
+.menu__foot {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.8rem 2rem;
+  padding-top: 1.2rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  opacity: 0;
+  transition: opacity 0.6s ease 0.35s;
+}
+
+.menu.is-open .menu__foot { opacity: 1; }
+.menu__foot a { color: #fff; text-decoration: none; }
+.menu__foot a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.menu__social { display: inline-flex; gap: 1.6rem; }
+.menu .fc__faint { color: inherit; opacity: 0.7; margin-left: 0.3em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .menu__item { transition: none; }
+  .curtain { transition-duration: 0.01s; }
+}
+
+@media (max-width: 860px) {
+  .menu { padding: calc(var(--gutter) + 20px) 20px 20px 36px; }
+  .menu::before { left: 20px; right: auto; border-right: 0; }
+  .menu__item { grid-template-columns: 3.8rem minmax(0, 1fr) auto; }
+  .menu__label { font-size: clamp(1.9rem, 9vw, 2.6rem); }
+}

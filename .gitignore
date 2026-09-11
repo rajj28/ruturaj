@@ -1,0 +1,42 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+.vercel
+
+# Source renders, backups and scratch files in the project root. They are not
+# part of the build, and several are far too large for a repository.
+/127737-739309170.mp4
+/armlift.mp4
+/Firefly*.mp4
+/*.png
+/*.jpg
+/tree-svgrepo-com (1).svg
+/tree-video-prompt.md
+/bcheck.js
+/bcheck.cjs
+/bcheck2.cjs
+/_p.js
+/dev.log
+/tree-assets
+/media-originals
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

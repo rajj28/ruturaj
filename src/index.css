@@ -1,0 +1,178 @@
+/* Free stand-ins for the commercial faces on the reference site:
+   Fraunces  ~ Flecha (display serif)
+   Inter     ~ GT Standard (grotesque)
+   IBM Plex Mono ~ GT Standard Mono (labels, all-caps) */
+/* The faces themselves are requested from index.html — preconnected and in
+   parallel with this file — rather than @imported here, which would chain a
+   third round trip behind the stylesheet before any text could render. */
+
+:root {
+  --ink:       #f2f7ff;
+  --ink-soft:  rgba(238, 245, 255, 0.62);
+  --ink-faint: rgba(238, 245, 255, 0.34);
+
+  /* second page: sampled from the reference, #dedfd4 — a warm sage-bone,
+     not a neutral grey (green highest, blue lowest) */
+  --bone:      #dedfd4;
+  --bone-ink:  #1b1d18;
+  --bone-soft: rgba(27, 29, 24, 0.62);
+  --bone-rule: rgba(27, 29, 24, 0.16);
+
+  --rule:      rgba(255, 255, 255, 0.13);
+  --rule-soft: rgba(255, 255, 255, 0.07);
+
+  --serif: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --sans:  'Inter', ui-sans-serif, -apple-system, Arial, sans-serif;
+  --mono:  'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* the layout grid every rule and column snaps to */
+  --gutter: 81px;
+  --inset:  41px;   /* measured gap from rule to text */
+  --rule-b: 233px;  /* lower horizontal rule, up from the floor */
+  --col-a:  43%;
+  --col-b:  56%;
+  --bar:    81px;   /* equals the top rule, so the bar centres on it */
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background: #0c3b90;
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ---------- the dithered sky ---------- */
+.sky-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* ---------- hairline layout grid ----------
+   Geometry measured off the reference at 1536x816: verticals at x=81 and
+   x=1315 (221 in from the right), horizontals at y=81 and y=583 (233 up
+   from the bottom). A 16px marker sits at each of the four crossings.
+
+   Each rule is a container at zero opacity holding a .fill child that
+   scales in — that is what gives the line-draw entrance rather than the
+   whole grid just appearing. */
+.grid {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.grid i {
+  position: absolute;
+  display: block;
+  overflow: hidden;
+}
+
+.grid i::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--rule);
+  transform-origin: left center;
+  animation: draw-x 1.15s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.gv { top: 0; bottom: 0; width: 1px; }
+.gh { left: 0; right: 0; height: 1px; }
+
+.gv::after {
+  transform-origin: center top;
+  animation-name: draw-y;
+}
+
+.gv--l { left: var(--gutter); }
+.gv--r { right: 221px; }
+.gh--t { top: var(--gutter); }
+.gh--b { bottom: var(--rule-b); }
+
+/* stagger so the grid assembles rather than snapping in */
+.gh--t::after { animation-delay: 0.05s; }
+.gv--l::after { animation-delay: 0.20s; }
+.gv--r::after { animation-delay: 0.30s; }
+.gh--b::after { animation-delay: 0.40s; }
+
+@keyframes draw-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes draw-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+/* ---------- intersection markers ---------- */
+.gx {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;       /* centre on the crossing */
+  overflow: visible;
+}
+
+.gx--bl { left: var(--gutter); bottom: var(--rule-b); margin-bottom: -8px; top: auto; }
+.gx--br { right: 221px; bottom: var(--rule-b); margin-right: -8px; margin-bottom: -8px; left: auto; top: auto; }
+
+.gx svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: #fff;
+  /* the entrance, then the idle twinkle */
+  animation:
+    cross 0.72s cubic-bezier(0.22, 1, 0.36, 1) both,
+    shine 7s   cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* each marker twinkles on its own beat */
+.gx--bl svg { animation-delay: 0.20s, 2.4s; }
+.gx--br svg { animation-delay: 0.34s, 5.1s; }
+
+@keyframes cross {
+  from { transform: scale(0) rotate(-90deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg);   opacity: 0.5; }
+}
+
+/* idle most of the cycle, then one quick flare */
+@keyframes shine {
+  0%, 78%  { transform: scale(1) rotate(0deg);      opacity: 0.5; }
+  86%      { transform: scale(1.7) rotate(48deg);   opacity: 1; }
+  92%      { transform: scale(0.88) rotate(74deg);  opacity: 0.62; }
+  100%     { transform: scale(1) rotate(90deg);     opacity: 0.5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid i::after { animation: none; transform: none; }
+  .gx svg { animation: none; opacity: 0.5; }
+}
+
+@media (max-width: 860px) {
+  .gv--r, .gx--br { display: none; }
+  .gv--l, .gx--bl { left: 20px; }
+}
+
+
+/* ---------- screen wrappers ---------- */
+.screen {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* ---------- page two ---------- */
+.sheet {
+  position: relative;
+  min-height: 100svh;
+  color: var(--bone-ink);
+}
+
+/* the rules have to flip polarity on a light ground */
+.sheet .grid i::after { background: var(--bone-rule); }
+.sheet .gx svg { fill: var(--bone-ink); }
