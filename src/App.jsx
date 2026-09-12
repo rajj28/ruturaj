@@ -254,8 +254,8 @@ const ABOUT = {
   facts: ['AI / ML', 'LLMs · RAG · Agents', 'PyTorch · GANs', 'Pune, India'],
   /* the same claims the summary makes, set as figures */
   stats: [
-    { text: '1B+', label: 'Transactions a day, screened for fraud' },
-    { value: 40, suffix: '+', label: 'Open-source projects' },
+    { text: '56', label: 'Tests on the GPU fleet control plane' },
+    { value: 70, suffix: '+', label: 'Open-source projects' },
     { value: 200, suffix: '+', label: 'Pull requests' },
     { text: 'GSoC ’25', label: 'Google Summer of Code contributor' },
   ],
@@ -270,7 +270,84 @@ const ABOUT = {
    io / model / store / step, and edges are [from, to, label]. */
 const PROJECTS = [
   {
-    n: '01', name: 'SafePay AI', year: '2025', role: 'PyTorch · GANs',
+    n: '01', name: 'GPU Fleet Operator', year: '2026', role: 'Go · Kubernetes · Temporal',
+    note: 'A Kubernetes control plane for a GPU inference fleet \u2014 and the number utilization hides',
+    url: 'https://github.com/rajj28/gpu-fleet-operator',
+    tagline: 'Declare a model and a GPU width. Never learn which node served it.',
+    summary: 'An InferenceCluster CRD and controller-runtime reconciler that places serving replicas across a GPU fleet. The caller declares a model, a replica count, a GPU width and optionally that the replicas must share an interconnect domain \u2014 and never learns which node, hardware pool or NVLink island satisfied it. Underneath: a host lifecycle modelled as explicit versioned states, durable Temporal provisioning workflows, and a bin-packer that measures fragmentation and plans the defragmentation that reclaims it.',
+    why: 'A fleet can report 30% of its GPUs free and still refuse an 8-GPU job, because that 30% is scattered two at a time across forty hosts. Utilization does not show it. You find out when a deployment pends forever on a cluster you know has room \u2014 so the platform needs a number that says free-but-unusable, and a plan to fix it.',
+    where: [
+      'GPU clouds and inference platforms placing serving replicas across shared hardware',
+      'Any capacity system where free space and usable space are different quantities',
+      'Teams who want a self-service API instead of a ticket queue for cluster requests',
+    ],
+    how: [
+      'A caller applies an InferenceCluster; the reconciler builds a fleet view from node labels.',
+      'Existing placements are honoured if still valid \u2014 only the delta is placed, so live replicas never migrate for a marginally tighter fit.',
+      'Fragmentation(type, size) reports the share of free GPUs too scattered to take a replica that wide.',
+      'Defragment plans the consolidation against a clone; Apply is all-or-nothing and refuses a plan whose premise drifted.',
+    ],
+    results: [
+      { v: '56', l: 'Tests, go vet clean \u00b7 no cluster needed to run them' },
+      { v: '1.00', l: 'Fragmentation at 75% utilization \u2014 8 GPUs free, none usable' },
+      { v: '3', l: 'Real bugs the suite caught, written up in the README' },
+    ],
+    stack: ['Go', 'controller-runtime', 'CRD', 'Temporal', 'Kubernetes', 'MIT'],
+    diagram: {
+      alt: 'An InferenceCluster spec enters the reconciler, which reads node labels into a fleet view, honours existing placements, packs the remainder with the bin-packer, and writes placements and a fragmentation figure back to status. A separate Temporal workflow drives host provisioning through the lifecycle state machine.',
+      nodes: [
+        ['a', 'InferenceCluster', 'model \u00b7 replicas \u00b7 width', 'io', 0, 0],
+        ['b', 'Reconciler', 'controller-runtime', 'step', 1, 0],
+        ['c', 'Fleet view', 'from node labels', 'store', 2, 0],
+        ['d', 'Bin-packer', 'best-fit \u00b7 domains', 'model', 3, 0],
+        ['e', 'Status', 'placements \u00b7 fragmentation', 'io', 4, 0],
+        ['f', 'Nodes', 'GPU pools', 'io', 2, 1],
+        ['g', 'Temporal', 'provisioning workflow', 'step', 1, 1],
+        ['h', 'State machine', 'versioned transitions', 'model', 0, 1],
+      ],
+      edges: [['a', 'b'], ['b', 'c'], ['c', 'd'], ['d', 'e'], ['f', 'c', 'labels'], ['g', 'f', 'bring-up'], ['h', 'g', 'legal moves'], ['e', 'b', 'observed']],
+    },
+  },
+  {
+    n: '02', name: 'Collections Voice Agent', year: '2026', role: 'Bolna · Prompting · Red-team',
+    note: 'A Hinglish collections agent where the refusals are the product',
+    url: 'https://github.com/rajj28/bolna-collections-agent',
+    tagline: 'An RBI-constrained voice agent, and the 22 cases written to break it.',
+    summary: 'A live collections agent for an Indian NBFC, deployed on Bolna: Hinglish, Sarvam transcriber, barge-in enabled, four function-calling tools posting to a webhook so every invocation is inspectable. The interesting engineering is not the script \u2014 it is the ten hard refusals ranked above the call objective, and the adversarial suite written before the happy path.',
+    why: 'An agent that closes 20% more promises by implying legal consequences is not a better agent, it is a compliance incident under the RBI Fair Practices Code. Most collections prompts put the objective first and the constraints in a footer, and the model then optimises for the objective under pressure and starts hinting.',
+    where: [
+      'NBFC and lender collections, where the constraints are legal rather than stylistic',
+      'Any voice agent whose worst failure is a confident, well-formed, wrong answer',
+      'Vernacular Indian deployments \u2014 Hinglish, with silent mid-sentence language switching',
+    ],
+    how: [
+      'Ten guardrails sit above the objective in the prompt, which states that breaking one is worse than failing the call.',
+      'Do-not-call fires before any persuasion attempt \u2014 the extra ask is itself the violation.',
+      'No number is ever spoken unless it came from a tool result or the customer.',
+      'The 22-case suite tests RBI compliance, truthfulness and conversation robustness, in Hindi and English.',
+    ],
+    results: [
+      { v: '22', l: 'Adversarial cases, written before the happy path' },
+      { v: '5 / 5', l: 'Verified passing on the live agent, tools checked at the webhook' },
+    ],
+    stack: ['Bolna', 'Sarvam', 'Function calling', 'Prompt design', 'Red-teaming'],
+    diagram: {
+      alt: 'A call arrives, identity is confirmed, and the agent states the position. Guardrails sit above the objective and intercept: a do-not-call request fires the tool and ends immediately, a dispute ends the collections attempt, and only a confirmed date is recorded as a promise.',
+      nodes: [
+        ['a', 'Inbound call', 'Hinglish', 'io', 0, 0],
+        ['b', 'Identify', 'borrower only', 'step', 1, 0],
+        ['c', 'State position', 'amount \u00b7 due date', 'step', 2, 0],
+        ['d', 'Ask for a date', 'specific', 'model', 3, 0],
+        ['e', 'Promise recorded', 'read back first', 'io', 4, 0],
+        ['f', 'Guardrails', 'above the objective', 'store', 2, 1],
+        ['g', 'Do-not-call', 'fires immediately', 'io', 3, 1],
+        ['h', 'Dispute', 'no argument', 'io', 4, 1],
+      ],
+      edges: [['a', 'b'], ['b', 'c'], ['c', 'd'], ['d', 'e', 'confirmed'], ['f', 'c', 'intercept'], ['f', 'g'], ['f', 'h']],
+    },
+  },
+  {
+    n: '03', name: 'SafePay AI', year: '2025', role: 'PyTorch · GANs',
     note: 'GAN-based fraud detection at NPCI scale — 1B+ transactions a day',
     url: 'https://github.com/rajj28/FraudDetectionUsingGANs',
     tagline: 'GAN-augmented fraud detection for UPI-scale payments.',
@@ -309,7 +386,7 @@ const PROJECTS = [
     },
   },
   {
-    n: '02', name: 'AcreSense', year: '2026', role: 'SatVision · Drones',
+    n: '04', name: 'AcreSense', year: '2026', role: 'SatVision · Drones',
     note: 'Satellite-mapped farm plots into dock-aware drone spray missions',
     url: 'https://github.com/rajj28/acresense',
     live: 'https://acresense.fly.dev/',
@@ -350,7 +427,7 @@ const PROJECTS = [
     },
   },
   {
-    n: '03', name: 'Policy RAG', year: '2024', role: 'Pinecone · LangChain',
+    n: '05', name: 'Policy RAG', year: '2024', role: 'Pinecone · LangChain',
     note: 'Production RAG across Insurance, Legal, HR and Compliance corpora',
     url: 'https://github.com/rajj28/query-retrieval-using-RAG-pinecone-gpt-40-min',
     tagline: 'Multi-domain document processing and query retrieval, built for production.',
@@ -389,7 +466,7 @@ const PROJECTS = [
     },
   },
   {
-    n: '04', name: 'Drone Fleet AI', year: '2025', role: 'Multi-Agent · Python',
+    n: '06', name: 'Drone Fleet AI', year: '2025', role: 'Multi-Agent · Python',
     note: 'LangGraph agents — perception, planning and execution in one fleet',
     url: 'https://github.com/rajj28/Autonomous-Drone-Fleet-Coordinator-Multi-Agent-System',
     tagline: 'A multi-agent drone fleet coordinator where model confidence never gates autonomy on its own.',
@@ -426,7 +503,7 @@ const PROJECTS = [
     },
   },
   {
-    n: '05', name: 'DocPilot', year: '2026', role: 'LangGraph · RAG',
+    n: '07', name: 'DocPilot', year: '2026', role: 'LangGraph · RAG',
     note: 'RAG browser extension — streaming summaries and semantic follow-ups',
     url: 'https://github.com/rajj28/DocPilot',
     tagline: 'A browser extension that summarises documentation pages and answers follow-ups with RAG.',
@@ -462,7 +539,7 @@ const PROJECTS = [
     },
   },
   {
-    n: '06', name: 'RaceLab', year: '2026', role: 'CockroachDB · Agents',
+    n: '08', name: 'RaceLab', year: '2026', role: 'CockroachDB · Agents',
     note: 'Memory-aware replies to DB serialization conflicts for AI agents',
     url: 'https://github.com/rajj28/racelab',
     live: 'https://racelab.fly.dev',
@@ -502,7 +579,7 @@ const PROJECTS = [
     },
   },
   {
-    n: '07', name: 'AWS Fraud Shield', year: '2025', role: 'AWS · Next.js',
+    n: '09', name: 'AWS Fraud Shield', year: '2025', role: 'AWS · Next.js',
     note: 'Multi-modal call, vKYC and transaction fraud detection',
     url: 'https://github.com/rajj28/I-hack-esummit-2025',
     tagline: 'Real-time fraud detection across calls, video KYC and transactions.',
@@ -539,7 +616,7 @@ const PROJECTS = [
     },
   },
   {
-    n: '08', name: 'Drone Sentry', year: '2026', role: 'FastAPI · Gemini',
+    n: '10', name: 'Drone Sentry', year: '2026', role: 'FastAPI · Gemini',
     note: 'Drone surveillance video to threat alerts — FastAPI API and React dashboard',
     url: 'https://github.com/rajj28/drone-security-agent',
     live: 'https://drone-security-agent.fly.dev/',
@@ -576,7 +653,7 @@ const PROJECTS = [
     },
   },
   {
-    n: '09', name: 'Tables that Read', year: '2024', role: 'Fine-Tuning · Docs',
+    n: '11', name: 'Tables that Read', year: '2024', role: 'Fine-Tuning · Docs',
     note: 'Fine-tuning LayoutLMv3 on 10-K filings and invoices',
     url: 'https://github.com/rajj28/Fine-tuning-LayoutLMv3-for-Financial-Document-Table-Structure-Recognition',
     tagline: 'Fine-tuning LayoutLMv3 to read the structure of financial tables.',
@@ -1179,7 +1256,7 @@ function Sky({ riseRef, onOpenProject }) {
               <span className="rv-line"><em className="rvm" style={{ '--d': 0.09 }}>happened.</em></span>
             </h2>
             <p className="xp__intro rv" style={{ '--d': 0.14 }}>
-              An internship in payments at NPCI, then agentic AI in production at Concentrix.
+              An internship in payments at NPCI, then agentic AI in production at Concentrix \u2014 and infrastructure in Go on the side.
             </p>
             <dl className="xp__meta rv" style={{ '--d': 0.18 }}>
               <div><dt>Roles</dt><dd>{String(EXPERIENCE.length).padStart(2, '0')}</dd></div>
